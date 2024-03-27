@@ -19,11 +19,11 @@ class PORT_PULL_MODE(Enum):
     PULLDOWN = 2
     
 class Controller:
-    def __init__(self, test: bool=True):
+    def __init__(self, test: bool=True) -> None:
         self.test = test 
         self.__prepare_pins()
     
-    def __prepare_pins(self):
+    def __prepare_pins(self) -> None:
         """
         This function gets called when the class gets instantiated.
         This is done to properly configure the pins.
@@ -37,7 +37,7 @@ class Controller:
         # NOTE: a dummy setup 
         self.__set_pin_mode(GPIO_MAPPING.GATE_TRIGGER,PORT_MODE.OUTPUT)
         
-    def __set_pin_mode(self,pin: GPIO_MAPPING,mode: PORT_MODE):
+    def __set_pin_mode(self,pin: GPIO_MAPPING,mode: PORT_MODE) -> None:
         """
         This function is for setting the pin mode conveniently.
         This will wrap the function provided by the module.
@@ -49,7 +49,7 @@ class Controller:
             return
         print(f":: [PORT_MODE_SET] port: {pin}|{pin.value} mode: {mode}|{mode.value}")         
         
-    def toggle_pin(self,pin: GPIO_MAPPING, mode: PORT_STATE):
+    def toggle_pin(self,pin: GPIO_MAPPING, mode: PORT_STATE) -> None:
         if not self.test:
             # NOTE: implement the toggle
             # we are coding on a Laptop not on the Actual Orange PI one
