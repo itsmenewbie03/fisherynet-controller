@@ -1,22 +1,25 @@
-from typing import Union
 import serial
 import time
-from datetime import timedelta
 import random
+import requests
+
+from datetime import timedelta
+from typing import Union
 
 class Reader:
     reading: Union[int, float, bytearray] 
-    def __init__(self,port:str,baud_rate: int) -> None:
+    def __init__(self,port:str | None = None,baud_rate: int = 0) -> None:
         self.port = port
         self.baud_rate = baud_rate
         
-    def read(self):
+    def read(self) -> None:
         return 
         
     def get_reading(self):
         return self.reading
 
 class UltrasonicSensor(Reader):
+    
     def __validate(self,distance: int) -> bool:
         """
         Checks if the distance is valid based on observed readings
@@ -35,7 +38,7 @@ class UltrasonicSensor(Reader):
         #     return False
         return True
     
-    def read(self):
+    def read(self) -> None:
         print(":: [READER] Starting Ultrasonic Distance Sensor Reader")
         # TODO: properly handle error
         try:
@@ -81,3 +84,28 @@ class UltrasonicSensor(Reader):
         # open(f"ultrasonic_sensor_data_{time.time()}.txt", "w").write(str(data_list))
         # print(":: Data saved to file")
         self.reading = sum(data_list) /  len(data_list)
+        
+class Camera(Reader):
+    urls = [
+        "https://vimafoods.com/wp-content/uploads/2020/05/tilapia-negra-1481x1536.jpg",
+        "https://www.ocean-treasure.com/wp-content/uploads/2020/03/tilapia5.jpg",
+        "https://zipgrow.com/wp-content/uploads/2022/05/4fishfarm.png",
+        "https://5.imimg.com/data5/TQ/NA/MY-37031394/tilapia-fish.jpg",
+    ]
+    def __random_image(self) -> bytearray:
+        url = random.choice(self.urls) 
+        print(f":: [CAMERA] returning random image from {url}")
+        data = requests.get(url).content
+        return bytearray(data)
+    
+    def read(self) -> None:
+        print(":: [READER] Starting Camera Reader")
+        try:
+            # TODO: simulate the camera connection fail
+            raise Exception(":: [ERROR] Camera not connected")
+        except Exception as e:
+            print(":: [DEBUG_MODE] failed to connect to camera")
+            print(":: [DEBUG_MODE] dummy data ahead")
+            # NOTE: we will randomly select a URL to fetch and return the buffer
+            self.reading = self.__random_image()
+            return
