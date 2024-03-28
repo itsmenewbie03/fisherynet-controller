@@ -36,7 +36,7 @@ class UltrasonicSensor(Reader):
         return True
     
     def read(self):
-        print(":: Starting Ultrasonic Distance Sensor Reader")
+        print(":: [READER] Starting Ultrasonic Distance Sensor Reader")
         # TODO: properly handle error
         try:
             ser = serial.Serial(self.port, self.baud_rate)
