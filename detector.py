@@ -41,7 +41,7 @@ class Detector:
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2) 
         # INFO: write the image to a file 
         # used for visualizing how the detection went
-        cv2.imwrite(f'sized_{datetime.now()}', img) 
+        cv2.imwrite(f'sized_{datetime.now()}.png', img) 
         area = cv2.contourArea(largest_countour) 
         return area
 
