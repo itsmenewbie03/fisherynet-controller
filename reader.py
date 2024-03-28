@@ -7,7 +7,9 @@ from datetime import timedelta
 from typing import Union
 
 class Reader:
+    
     reading: Union[int, float, bytearray] 
+    
     def __init__(self,port:str | None = None,baud_rate: int = 0) -> None:
         self.port = port
         self.baud_rate = baud_rate
@@ -81,17 +83,17 @@ class UltrasonicSensor(Reader):
                 data_list.append(distance)
                 
         ser.close()
-        # open(f"ultrasonic_sensor_data_{time.time()}.txt", "w").write(str(data_list))
-        # print(":: Data saved to file")
         self.reading = sum(data_list) /  len(data_list)
         
 class Camera(Reader):
+    
     urls = [
         "https://vimafoods.com/wp-content/uploads/2020/05/tilapia-negra-1481x1536.jpg",
         "https://www.ocean-treasure.com/wp-content/uploads/2020/03/tilapia5.jpg",
         "https://zipgrow.com/wp-content/uploads/2022/05/4fishfarm.png",
         "https://5.imimg.com/data5/TQ/NA/MY-37031394/tilapia-fish.jpg",
     ]
+    
     def __random_image(self) -> bytearray:
         url = random.choice(self.urls) 
         print(f":: [CAMERA] returning random image from {url}")
