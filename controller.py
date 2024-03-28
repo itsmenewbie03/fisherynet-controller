@@ -3,7 +3,7 @@ from typing import Optional
 from pyA20.gpio import gpio, port # pyright: ignore
 
 class GPIO_MAPPING(Enum):
-    GATE_TRIGGER = port.PA7
+    GATE_TRIGGER = port.PA7 if hasattr(port,"PA7") else 0
     # NOTE: add more GPIO as needed
     
 class PORT_MODE(Enum):
@@ -23,7 +23,8 @@ class Controller:
     def __init__(self) -> None:
         self.prod = self.__on_armbian()
         print(f":: [ENV] {'PROD' if self.prod else 'TEST'}")
-        gpio.init()
+        if self.prod:
+            gpio.init()
         self.__prepare_pins()
         
     def __on_armbian(self) -> bool:
