@@ -25,14 +25,14 @@ class UltrasonicSensor(Reader):
             # INFO: this is a null or unreadable data
             # or something is blocking the sensor
             return False
-        if distance in range(200,300):
-            # INFO: uneven surface detected
-            # and it's scattered
-            return False
-        if distance in range(100,199):
-            # INFO: uneven surface detected
-            # and it's near with each other
-            return False
+        # if distance in range(200,300):
+        #     # INFO: uneven surface detected
+        #     # and it's scattered
+        #     return False
+        # if distance in range(100,199):
+        #     # INFO: uneven surface detected
+        #     # and it's near with each other
+        #     return False
         return True
     
     def read(self):
@@ -54,7 +54,7 @@ class UltrasonicSensor(Reader):
         data_list = []
         
         while True:
-            if len(data_list) == 10:
+            if len(data_list) == 20:
                 print(":: Process Completed")
                 print(data_list)
                 print(":: Average Distance:", sum(data_list)/len(data_list))
