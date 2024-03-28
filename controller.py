@@ -19,10 +19,19 @@ class PORT_PULL_MODE(Enum):
     PULLDOWN = 2
     
 class Controller:
-    def __init__(self, test: bool=True) -> None:
-        self.test = test 
+    def __init__(self) -> None:
+        self.prod = self.__on_armbian()
         self.__prepare_pins()
     
+    def __on_armbian(self) -> bool:
+        """
+        This function will check if the system is running on Armbian
+        or not. This is done to make the code more portable.
+        """
+        with open("/etc/os-release") as f:
+            os_release_data = {line.rstrip().split("=", 1)[0]: line.rstrip().split("=", 1)[1] for line in f}
+        return "armbian" in os_release_data["PRETTY_NAME"].lower()
+        
     def __prepare_pins(self) -> None:
         """
         This function gets called when the class gets instantiated.
@@ -31,7 +40,7 @@ class Controller:
         would be heavily reliant on the design of the system.
         """
         # TODO: implement the configuration needed
-        if not self.test:
+        if self.prod:
             return
         print(f":: [PREPARE_PINS] ...") 
         # NOTE: a dummy setup 
@@ -42,7 +51,7 @@ class Controller:
         This function is for setting the pin mode conveniently.
         This will wrap the function provided by the module.
         """
-        if not self.test:
+        if self.prod:
             # NOTE: implement the toggle
             # we are coding on a Laptop not on the Actual Orange PI one
             # so we gotta make the framework for it first
@@ -50,7 +59,7 @@ class Controller:
         print(f":: [PORT_MODE_SET] port: {pin}|{pin.value} mode: {mode}|{mode.value}")         
         
     def toggle_pin(self,pin: GPIO_MAPPING, mode: PORT_STATE) -> None:
-        if not self.test:
+        if self.prod:
             # NOTE: implement the toggle
             # we are coding on a Laptop not on the Actual Orange PI one
             # so we gotta make the framework for it first
