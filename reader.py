@@ -47,6 +47,7 @@ class UltrasonicSensor(Reader):
                 print(f":: Got data after {timedelta(seconds=int(end)-(start))}")
             # TODO: parse the data
             data = ser.read(ser.in_waiting)
+            print(f":: [DEBUG] {data}")
             distance = int(data.split(b':')[1].split(b'\r')[0].decode())
             # WARN: this blindly accepts the reading, 
             # WARN: additional calibration must be added to normalize the readings

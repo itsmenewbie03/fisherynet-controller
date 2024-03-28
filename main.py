@@ -7,6 +7,6 @@ if __name__ == "__main__":
     gate_trigger_state = controller.read_pin(port.GATE_TRIGGER)
     print(f":: [GATE_TRIGGER] : {gate_trigger_state}")
 
-    reader = UltrasonicSensor("deez",69_420) 
+    reader = UltrasonicSensor("/dev/ttyUSB0",115_200) 
     reader.read() 
     print(f":: [DISTANCE] : {reader.get_reading()}")
