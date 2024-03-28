@@ -26,7 +26,6 @@ class Controller:
         gpio.init()
         self.__prepare_pins()
         
-    
     def __on_armbian(self) -> bool:
         """
         This function will check if the system is running on Armbian
@@ -70,15 +69,15 @@ class Controller:
             return
         print(f":: [PORT_MODE_SET] port: {pin}|{pin.value} mode: {mode}|{mode.value}")         
         
-    def __set_pin_status(self,pin: GPIO_MAPPING,mode: PORT_STATE) -> None:
+    def __set_pin_status(self,pin: GPIO_MAPPING,state: PORT_STATE) -> None:
         """
         This function is for setting the PIN STATUS not MODE conveniently.
         This will wrap the function provided by the module.
         """
         if self.prod:
-            gpio.output(pin.value,mode.value)
+            gpio.output(pin.value,state.value)
             return
-        print(f":: [PORT_STATUS_SET] port: {pin}|{pin.value} mode: {mode}|{mode.value}")
+        print(f":: [PORT_STATUS_SET] port: {pin}|{pin.value} state: {state}|{state.value}")
         
     def __get_pin_status(self,pin: GPIO_MAPPING) -> Optional[int]:
         if self.prod:
@@ -97,12 +96,12 @@ class Controller:
             return
         print(f":: [PIN_CHECK] Checking all pins...")
         
-    def toggle_pin(self,pin: GPIO_MAPPING, mode: PORT_STATE) -> None:
+    def toggle_pin(self,pin: GPIO_MAPPING, state: PORT_STATE) -> None:
         if self.prod:
-            self.__set_pin_status(pin,mode)
-            print(f":: [TOGGLE] port: {pin}|{pin.value} mode: {mode}|{mode.value}") 
+            self.__set_pin_status(pin,state)
+            print(f":: [TOGGLE] port: {pin}|{pin.value} mode: {state}|{state.value}") 
             return
-        print(f":: [TOGGLE] port: {pin}|{pin.value} mode: {mode}|{mode.value}") 
+        print(f":: [TOGGLE] port: {pin}|{pin.value} mode: {state}|{state.value}") 
         
     def read_pin(self,pin: GPIO_MAPPING) -> Optional[int]:
         if self.prod:
