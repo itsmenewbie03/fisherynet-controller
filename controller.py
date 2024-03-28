@@ -22,8 +22,10 @@ class PORT_PULL_MODE(Enum):
 class Controller:
     def __init__(self) -> None:
         self.prod = self.__on_armbian()
-        self.__prepare_pins()
         print(f":: [ENV] {'PROD' if self.prod else 'TEST'}")
+        gpio.init()
+        self.__prepare_pins()
+        
     
     def __on_armbian(self) -> bool:
         """
@@ -41,7 +43,7 @@ class Controller:
         e.g setting port.PA7 as OUTPUT. The implementation of this
         would be heavily reliant on the design of the system.
         """
-        print(f":: [PREPARE_PINS] ...") 
+        print(f":: [INIT] Preparing pins...") 
         # TODO: implement the configuration needed
         if self.prod:
             self.__set_pin_mode(GPIO_MAPPING.GATE_TRIGGER,PORT_MODE.OUTPUT)
@@ -98,6 +100,7 @@ class Controller:
     def toggle_pin(self,pin: GPIO_MAPPING, mode: PORT_STATE) -> None:
         if self.prod:
             self.__set_pin_status(pin,mode)
+            print(f":: [TOGGLE] port: {pin}|{pin.value} mode: {mode}|{mode.value}") 
             return
         print(f":: [TOGGLE] port: {pin}|{pin.value} mode: {mode}|{mode.value}") 
         
