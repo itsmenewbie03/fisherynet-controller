@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 from pyA20.gpio import gpio, port # pyright: ignore
 
 class GPIO_MAPPING(Enum):
@@ -49,6 +50,9 @@ class Controller:
         self.__set_pin_mode(GPIO_MAPPING.GATE_TRIGGER,PORT_MODE.OUTPUT)
         
     def __check_pin_mode(self,port: GPIO_MAPPING) -> Optional[int]:
+        """
+        Returns the current mode of the pin
+        """
         if self.prod:
             status = gpio.getcfg(port.value)
             return status
@@ -61,18 +65,44 @@ class Controller:
         """
         if self.prod:
             gpio.setcfg(pin.value,mode.value)
-            # NOTE: implement the toggle
-            # we are coding on a Laptop not on the Actual Orange PI one
-            # so we gotta make the framework for it first
             return
         print(f":: [PORT_MODE_SET] port: {pin}|{pin.value} mode: {mode}|{mode.value}")         
+        
+    def __set_pin_status(self,pin: GPIO_MAPPING,mode: PORT_STATE) -> None:
+        """
+        This function is for setting the PIN STATUS not MODE conveniently.
+        This will wrap the function provided by the module.
+        """
+        if self.prod:
+            gpio.output(pin.value,mode.value)
+            return
+        print(f":: [PORT_STATUS_SET] port: {pin}|{pin.value} mode: {mode}|{mode.value}")
+        
+    def __get_pin_status(self,pin: GPIO_MAPPING) -> Optional[int]:
+        if self.prod:
+            status = gpio.input(pin.value)
+            return status
+        print(f":: [PORT_STATUS_GET] port: {pin}|{pin.value}")
+        
     def check_pins(self,pins: list[GPIO_MAPPING]) -> None:
-        pass
+        """
+        Checks the current mode of each pins
+        """
+        if self.prod:
+            for pin in pins:
+                status = self.__check_pin_mode(pin)
+                print(f":: [PIN_CHECK] port: {pin}|{pin.value} status: {status}")
+            return
+        print(f":: [PIN_CHECK] Checking all pins...")
         
     def toggle_pin(self,pin: GPIO_MAPPING, mode: PORT_STATE) -> None:
         if self.prod:
-            # NOTE: implement the toggle
-            # we are coding on a Laptop not on the Actual Orange PI one
-            # so we gotta make the framework for it first
+            self.__set_pin_status(pin,mode)
             return
         print(f":: [TOGGLE] port: {pin}|{pin.value} mode: {mode}|{mode.value}") 
+        
+    def read_pin(self,pin: GPIO_MAPPING) -> Optional[int]:
+        if self.prod:
+            status = self.__get_pin_status(pin)
+            return status
+        print(f":: [READ] port: {pin}|{pin.value}")
