@@ -3,6 +3,7 @@ charset-normalizer==3.3.2
 idna==3.6
 numpy==1.26.4
 opencv-python==4.9.0.80
+paho-mqtt==2.0.0
 pyA20==0.2.12
 pyserial==3.5
 requests==2.31.0
