@@ -1,7 +1,9 @@
+from calibrator import Calibrator
+from connector import Connector
 from controller import Controller, GPIO_MAPPING as port , PORT_MODE as mode, PORT_STATE as state
 from detector import Detector
 from reader import Camera, UltrasonicSensor
-
+    
 if __name__ == "__main__":
     controller = Controller()
     controller.check_pins([port.GATE_TRIGGER])
@@ -24,3 +26,8 @@ if __name__ == "__main__":
     # This issue with types kinda tells me that I should do some refactoring
     est_size = detector.detect_size(image,float(distance)) # pyright: ignore
     print(f":: [DETECTOR] Estimated Size: {est_size}")
+
+    connector = Connector()
+    connector.calibrator = Calibrator()
+    connector.start()
+    
