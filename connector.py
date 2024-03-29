@@ -1,7 +1,12 @@
+from time import sleep
 import paho.mqtt.client as mqtt
 
+from enum import Enum
 from calibrator import Calibrator
 
+class CONFIGS(Enum):
+    MIN_FISH_SIZE = "min_fish_size"    
+    
 class Connector:
     broker = "mqtt.eclipseprojects.io"
     port = 1883
@@ -47,5 +52,15 @@ class Connector:
         self.client.on_message = self.__on_message
         self.client.connect(self.broker,self.port,self.keepalive)    
         
+    def get_config(self,config_name:CONFIGS):
+        self.client.loop_start()
+        self.client.publish("FISHERYNET|CONFIG_REQUEST",f"{config_name.value}")
+        # NOTE: ensure the message is published
+        sleep(2)
+        self.client.loop_stop()
+        
     def start(self) -> None:
         self.client.loop_forever()
+        
+    def stop(self) -> None:
+        self.client.disconnect()
