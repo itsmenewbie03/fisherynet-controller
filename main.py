@@ -26,11 +26,10 @@ if __name__ == "__main__":
     # This issue with types kinda tells me that I should do some refactoring
     est_size = detector.detect_size(image,float(distance)) # pyright: ignore
     print(f":: [DETECTOR] Estimated Size: {est_size}")
-
+    
     connector = Connector()
     connector.calibrator = Calibrator()
     # connector.start()
-    connector.get_config(CONFIGS.MIN_FISH_SIZE);
+    min_fish_size = connector.get_config(CONFIGS.MIN_FISH_SIZE);
+    print(f":: [CONFIG] Min Fish Size: {min_fish_size} we made it to main")
     # connector.stop()
-    
-    
