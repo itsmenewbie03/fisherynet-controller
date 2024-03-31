@@ -4,8 +4,8 @@ from pyA20.gpio import gpio, port # pyright: ignore
 
 class GPIO_MAPPING(Enum):
     GATE_TRIGGER = port.PA7 if hasattr(port,"PA7") else -69 
-    EXTRA_1 = port.PA8 if hasattr(port,"PA8") else -69
-    EXTRA_2 = port.PA9 if hasattr(port,"PA9") else -69
+    EXTRA_1 = port.PA8 if hasattr(port,"PA8") else -70
+    EXTRA_2 = port.PA9 if hasattr(port,"PA9") else -71
     # NOTE: add more GPIO as needed
     
 class PORT_MODE(Enum):

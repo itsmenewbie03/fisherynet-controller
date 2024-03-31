@@ -9,7 +9,7 @@ if __name__ == "__main__":
     controller = Controller()
     controller.check_pins([port.GATE_TRIGGER])
     print(f":: [BLINK_TEST] performing a blink test...")
-    for x in range(10):
+    for x in range(5):
         controller.toggle_pin(port.GATE_TRIGGER,state.HIGH if x%2==0 else state.LOW);
         # controller.toggle_pin(port.EXTRA_1,state.HIGH if x%2==0 else state.LOW);
         # controller.toggle_pin(port.EXTRA_2,state.HIGH if x%2==0 else state.LOW);
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     est_size = detector.detect_size(image,float(distance)) # pyright: ignore
     print(f":: [DETECTOR] Estimated Size: {est_size}")
     
-    connector = Connector()
+    connector = Connector(controller)
     connector.calibrator = Calibrator()
     connector.start()
     # min_fish_size = connector.get_config(CONFIGS.MIN_FISH_SIZE);
