@@ -11,6 +11,8 @@ if __name__ == "__main__":
     print(f":: [BLINK_TEST] performing a blink test...")
     for x in range(5):
         controller.toggle_pin(port.GATE_TRIGGER,state.HIGH if x%2==0 else state.LOW);
+        controller.toggle_pin(port.EXTRA_1,state.HIGH if x%2==0 else state.LOW);
+        controller.toggle_pin(port.EXTRA_2,state.HIGH if x%2==0 else state.LOW);
         sleep(1)
     controller.toggle_pin(port.GATE_TRIGGER,state.LOW);
     gate_trigger_state = controller.read_pin(port.GATE_TRIGGER)

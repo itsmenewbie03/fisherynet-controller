@@ -3,7 +3,9 @@ from typing import Optional
 from pyA20.gpio import gpio, port # pyright: ignore
 
 class GPIO_MAPPING(Enum):
-    GATE_TRIGGER = port.PA7 if hasattr(port,"PA7") else 0
+    GATE_TRIGGER = port.PA7 if hasattr(port,"PA7") else -69 
+    EXTRA_1 = port.PA8 if hasattr(port,"PA8") else -69
+    EXTRA_2 = port.PA9 if hasattr(port,"PA9") else -69
     # NOTE: add more GPIO as needed
     
 class PORT_MODE(Enum):
@@ -47,6 +49,8 @@ class Controller:
         # TODO: implement the configuration needed
         if self.prod:
             self.__set_pin_mode(GPIO_MAPPING.GATE_TRIGGER,PORT_MODE.OUTPUT)
+            self.__set_pin_mode(GPIO_MAPPING.EXTRA_1,PORT_MODE.OUTPUT)
+            self.__set_pin_mode(GPIO_MAPPING.EXTRA_2,PORT_MODE.OUTPUT)
             return
         # NOTE: a dummy setup 
         self.__set_pin_mode(GPIO_MAPPING.GATE_TRIGGER,PORT_MODE.OUTPUT)
