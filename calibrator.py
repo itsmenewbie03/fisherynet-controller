@@ -28,3 +28,4 @@ class Calibrator:
         # This issue with types kinda tells me that I should do some refactoring
         est_size = detector.detect_size(image,float(distance)) # pyright: ignore
         print(f":: [DETECTOR] Estimated Size: {est_size}")
+        return est_size
