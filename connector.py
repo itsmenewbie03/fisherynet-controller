@@ -54,8 +54,8 @@ class Connector:
                 
             case b"START_DETECTION_CALIBRATION":
                 print(f":: [COMMAND_HANDLER]  detection calibration started")
-                self.calibrator.calibrate_detection()
-                
+                est_size = self.calibrator.calibrate_detection()
+                self.client.publish("FISHERYNET|CALIBRATION_RESPONSE",f"est_size={est_size}") 
             case _:
                 print(f":: [COMMAND_HANDLER] handler for command {str(command)} is not yet implemented.")
                 
@@ -86,6 +86,7 @@ class Connector:
         return config_value
     
     def start(self) -> None:
+        print(":: [MQTT_LISTENER] started listening...")
         self.client.loop_forever()
         
     def stop(self) -> None:
