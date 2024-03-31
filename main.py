@@ -1,3 +1,4 @@
+from time import sleep
 from calibrator import Calibrator
 from connector import CONFIGS, Connector
 from controller import Controller, GPIO_MAPPING as port , PORT_MODE as mode, PORT_STATE as state
@@ -7,7 +8,11 @@ from reader import Camera, UltrasonicSensor
 if __name__ == "__main__":
     controller = Controller()
     controller.check_pins([port.GATE_TRIGGER])
-    controller.toggle_pin(port.GATE_TRIGGER,state.HIGH);
+    print(f":: [BLINK_TEST] performing a blink test...")
+    for x in range(5):
+        controller.toggle_pin(port.GATE_TRIGGER,state.HIGH if x%2==0 else state.LOW);
+        sleep(1)
+    controller.toggle_pin(port.GATE_TRIGGER,state.LOW);
     gate_trigger_state = controller.read_pin(port.GATE_TRIGGER)
     print(f":: [GATE_TRIGGER] : {gate_trigger_state}")
 
@@ -29,7 +34,7 @@ if __name__ == "__main__":
     
     connector = Connector()
     connector.calibrator = Calibrator()
-    # connector.start()
-    min_fish_size = connector.get_config(CONFIGS.MIN_FISH_SIZE);
-    print(f":: [CONFIG] Min Fish Size: {min_fish_size} we made it to main")
+    connector.start()
+    # min_fish_size = connector.get_config(CONFIGS.MIN_FISH_SIZE);
+    # print(f":: [CONFIG] Min Fish Size: {min_fish_size} we made it to main")
     # connector.stop()
