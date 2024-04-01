@@ -31,8 +31,9 @@ class Connector:
         
     def __on_connect(self,client, userdata, flags, reason_code, properties) -> None:
         print(f":: [CONNECTOR] Connected with result code {reason_code}")
-        client.subscribe("FISHERYNET|COMMANDS")
-        client.subscribe("FISHERYNET|TOGGLE_PORT")
+        self.client.subscribe("FISHERYNET|COMMANDS")
+        self.client.subscribe("FISHERYNET|TOGGLE_PORT")
+        self.client.subscribe("FISHERYNET|CONFIG_RESPONSE")
         
     def __message_handler(self, topic: bytes, payload: bytes) -> None:
         """
@@ -43,7 +44,7 @@ class Connector:
                 self.__command_handler(payload)
                 
             case "FISHERYNET|CONFIG_RESPONSE":
-                # print(f":: [MESSAGE_HANDER] Configuration Response: {payload}")
+                print(f":: [MESSAGE_HANDER] Configuration Response: {payload}")
                 self.__config_handler(payload)
                 
             case "FISHERYNET|TOGGLE_PORT":
@@ -62,6 +63,10 @@ class Connector:
             case b"START_DETECTION_CALIBRATION":
                 print(f":: [COMMAND_HANDLER]  detection calibration started")
                 est_size = self.calibrator.calibrate_detection()
+                # call the get config to compare the estimated size with the minimum fish size
+                min_fish_size = self.get_config(CONFIGS.MIN_FISH_SIZE)
+                print(f":: [COMMAND_HANDLER]  estimated size: {est_size}, minimum fish size: {min_fish_size}")
+                print(f":: [COMMAND_HANDLER]  the fish is {'big' if est_size >= min_fish_size else 'small'}")
                 self.client.publish("FISHERYNET|CALIBRATION_RESPONSE",f"est_size={est_size}") 
             case _:
                 print(f":: [COMMAND_HANDLER] handler for command {str(command)} is not yet implemented.")
@@ -94,15 +99,13 @@ class Connector:
         self.client.loop_start()
         # NOTE: we subscribe because we wil only be interested in CONFIG_RESPONSE
         # when we actually request for a configuration
-        self.client.subscribe("FISHERYNET|CONFIG_RESPONSE")
         self.client.publish("FISHERYNET|CONFIG_REQUEST",f"{config_name.value}")
         while not config_name.value in self.config:
             print(":: [GET_CONFIG] Waiting for response...")
-            sleep(0.5)
+            sleep(1)
+        self.client.loop_stop()
         config_value = self.config[config_name.value]
         print(f":: [GET_CONFIG] Configuration: {config_value}")
-        self.client.unsubscribe("FISHERYNET|CONFIG_RESPONSE")
-        self.client.loop_stop()
         return config_value
     
     def start(self) -> None:
