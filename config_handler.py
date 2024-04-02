@@ -8,7 +8,7 @@ class ConfigHandler(Connector):
     we are having issues with the network loop.
     If this works I would punch myself
     """
-    is_config_handler = True
     def __init__(self, controller: Controller) -> None:
+        self.is_config_handler = True
         super().__init__(controller, self)
     
