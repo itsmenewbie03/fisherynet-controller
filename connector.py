@@ -1,10 +1,12 @@
+from enum import Enum
+from time import sleep
 from typing import Any
+
 import paho.mqtt.client as mqtt
 
-from time import sleep
 from calibrator import Calibrator
-from controller import GPIO_MAPPING, PORT_STATE, Controller
-from enum import Enum
+from controller import Controller, GPIO_MAPPING, PORT_STATE
+from reporter import Reporter
 
 class CONFIGS(Enum):
     MIN_FISH_SIZE = "min_fish_size"    
@@ -38,12 +40,13 @@ class Connector:
     def __on_connect(self,client, userdata, flags, reason_code, properties) -> None:
         print(f":: [{'GENERIC' if not self.is_config_handler else 'CONFIG_HANDLER'}_CONNECTOR] Connected with result code {reason_code}")
         if not self.is_config_handler:
+            print(":: [GENERIC_CONNECTOR] Subscribing to COMMANDS and TOGGLE_PORT topic...")
             self.client.subscribe("FISHERYNET|COMMANDS")
             self.client.subscribe("FISHERYNET|TOGGLE_PORT")
-            
             # NOTE: if connector is not a config_hanlder we won't subscribe to CONFIG_RESPONSE
             # early return 
             return
+        print(":: [CONFIG_HANDLER_CONNECTOR] Subscribing to CONFIG_RESPONSE")
         self.client.subscribe("FISHERYNET|CONFIG_RESPONSE")
         
     def __message_handler(self, topic: bytes, payload: bytes) -> None:
@@ -76,8 +79,13 @@ class Connector:
                 est_size = self.calibrator.calibrate_detection()
                 # call the get config to compare the estimated size with the minimum fish size
                 min_fish_size = self.config_handler.get_config(CONFIGS.MIN_FISH_SIZE)
+                is_big = est_size >= min_fish_size
                 print(f":: [COMMAND_HANDLER]  estimated size: {est_size}, minimum fish size: {min_fish_size}")
-                print(f":: [COMMAND_HANDLER]  the fish is {'big' if est_size >= min_fish_size else 'small'}")
+                print(f":: [COMMAND_HANDLER]  the fish is {'big' if is_big else 'small'}")
+                # NOTE: we only send the report if the connector is not a config_handler
+                # weird this should not be hit since we're not subscribe to COMMANDS
+                if is_big:
+                    Reporter.send_report(f"est_size={est_size}") # pyright: ignore
                 self.client.publish("FISHERYNET|CALIBRATION_RESPONSE",f"est_size={est_size}") 
             case _:
                 print(f":: [COMMAND_HANDLER] handler for command {str(command)} is not yet implemented.")
