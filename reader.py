@@ -1,12 +1,13 @@
+from datetime import timedelta
 from os import remove
-import serial
+from os import path
+import random
 import subprocess
 import time
-import random
-import requests
-
-from datetime import timedelta
 from typing import Union
+
+import requests
+import serial
 
 class Reader:
     
@@ -88,31 +89,46 @@ class UltrasonicSensor(Reader):
         self.reading = sum(data_list) /  len(data_list)
         
 class Camera(Reader):
+    device_idx: int = 0
 
     def __init__(self) -> None:
-        pass
+        # TODO: load the cached device index
+        if path.exists("device_idx.txt"):
+            self.device_idx = int(open("device_idx.txt").read())
  
-    def capture_image(self,device="/dev/video0", resolution="1280x720"):
+    def capture_image(self,device_idx: int = device_idx, resolution: str="1280x720"):
         """
         Captures an image from the specified device and resolution.
 
         Args:
-            device (str, optional): Path to the video device (default: "/dev/video1").
+            device_idx (int, optional): Index of the video device (default: "/dev/video0").
             resolution (str, optional): Resolution string for fswebcam (default: "1280x720").
 
         Returns:
             bytearray: The captured image data as a bytearray or None if an error occurs.
         """
-
+        
+        device = f"/dev/video{device_idx}"
         command = ["fswebcam", "--no-timestamp", "--no-banner", "-r", resolution, "--png", "1", "-d", device, "imgs/temp.png"]
 
         # NOTE: i don't understand a single thing below xD
-        # Create a pipe to capture output
         with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
             errors = process.stderr.read().decode("utf-8") # pyright: ignore
             if not "Writing PNG" in errors:
+                if "Inappropriate ioctl for device" in errors:
+                    print(f":: [CAMERA_ERROR] {device} is not a valid device, trying another device...")
+                    if device_idx == 3:
+                        print(":: [ERROR] No valid device found")
+                        return None
+                    # NOTE: recursively call the function to try the next device
+                    return self.capture_image(device_idx + 1, resolution)
                 print(f":: [ERROR] fswebcam failed: {errors}")
                 return None
+            # TODO: cache the working device_idx
+            if device_idx != 0 and not path.exists("device_idx.txt"):
+                print(f":: [CAMERA] Device {device} is working, caching the device index")
+                open("device_idx.txt", "w").write(str(device_idx))
+                
             # INFO: read the image
             data = open("imgs/temp.png", "rb").read()
             # INFO: delete the image because we don't have infinite storage
