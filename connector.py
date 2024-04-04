@@ -10,6 +10,7 @@ from reporter import Reporter
 
 class CONFIGS(Enum):
     MIN_FISH_SIZE = "min_fish_size"    
+    CALIBRATION_FACTOR = "calibration_factor"
     
 class Connector:
     is_config_handler = False
@@ -109,6 +110,9 @@ class Connector:
             case "min_fish_size":
                 print(f":: [CONFIG_HANDLER] Minimum fish size: {value}")
                 self.config["min_fish_size"] = int(value)
+            case "calibration_factor":
+                print(f":: [CONFIG_HANDLER] Calibration factor: {value}")
+                self.config["calibration_factor"] = float(value)
             case _:
                 pass
                 # print(f":: [CONFIG_HANDLER] handler for config {config} is not yet implemented.")
@@ -127,7 +131,7 @@ class Connector:
                 raise Exception("Maximum retries reached")
             print(":: [GET_CONFIG] Waiting for response...")
             retry_count += 1
-            sleep(0.5)
+            sleep(1)
             
         self.client.loop_stop()
         config_value = self.config[config_name.value]
