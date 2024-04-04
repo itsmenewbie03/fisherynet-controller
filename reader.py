@@ -1,4 +1,6 @@
+from os import remove
 import serial
+import subprocess
 import time
 import random
 import requests
@@ -86,6 +88,36 @@ class UltrasonicSensor(Reader):
         self.reading = sum(data_list) /  len(data_list)
         
 class Camera(Reader):
+
+    def __init__(self) -> None:
+        pass
+ 
+    def capture_image(self,device="/dev/video0", resolution="1280x720"):
+        """
+        Captures an image from the specified device and resolution.
+
+        Args:
+            device (str, optional): Path to the video device (default: "/dev/video1").
+            resolution (str, optional): Resolution string for fswebcam (default: "1280x720").
+
+        Returns:
+            bytearray: The captured image data as a bytearray or None if an error occurs.
+        """
+
+        command = ["fswebcam", "--no-timestamp", "--no-banner", "-r", resolution, "--png", "1", "-d", device, "imgs/temp.png"]
+
+        # NOTE: i don't understand a single thing below xD
+        # Create a pipe to capture output
+        with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
+            errors = process.stderr.read().decode("utf-8") # pyright: ignore
+            if not "Writing PNG" in errors:
+                print(f":: [ERROR] fswebcam failed: {errors}")
+                return None
+            # INFO: read the image
+            data = open("imgs/temp.png", "rb").read()
+            # INFO: delete the image because we don't have infinite storage
+            remove("imgs/temp.png")
+            return bytearray(data)
     
     urls = [
         "https://vimafoods.com/wp-content/uploads/2020/05/tilapia-negra-1481x1536.jpg",
