@@ -150,12 +150,11 @@ class Camera(Reader):
     
     def read(self) -> None:
         print(":: [READER] Starting Camera Reader")
-        try:
-            # TODO: simulate the camera connection fail
-            raise Exception(":: [ERROR] Camera not connected")
-        except Exception as e:
+        img_buf = self.capture_image()
+        if not img_buf:
             print(":: [DEBUG_MODE] failed to connect to camera")
             print(":: [DEBUG_MODE] dummy data ahead")
             # NOTE: we will randomly select a URL to fetch and return the buffer
             self.reading = self.__random_image()
             return
+        self.reading = img_buf
