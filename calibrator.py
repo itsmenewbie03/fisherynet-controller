@@ -1,9 +1,12 @@
 from detector import Detector
 from reader import Camera, UltrasonicSensor
+from controller import Controller
 
 class Calibrator:
-    
+     
     def __init__(self) -> None:
+        from config_handler import ConfigHandler
+        self.config_handler = ConfigHandler(Controller())
         return  
     
     def calibrate_detection(self):
@@ -21,8 +24,11 @@ class Calibrator:
         camera = Camera()
         camera.read()
         image = camera.get_reading()
-        
-        detector = Detector(1.5)
+        # NOTE: import localy to avoid circular imports
+        from connector import CONFIGS
+        calibration_factor = self.config_handler.get_config(CONFIGS.CALIBRATION_FACTOR) 
+        print(f":: [CALIBRATOR] initialized with calibration_factor of {calibration_factor}")
+        detector = Detector(calibration_factor)
         # NOTE: we know that image is indeed a bytearray 
         # we will make pyright shut up
         # This issue with types kinda tells me that I should do some refactoring
