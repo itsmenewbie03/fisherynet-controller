@@ -1,5 +1,6 @@
 import paho.mqtt.client as mqtt
 
+
 class Reporter:
     """
     Class to handle the reporting of the fisherynet system
@@ -25,7 +26,9 @@ class Reporter:
         """
 
         if Reporter._client is None:
-            Reporter._client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2) # pyright: ignore
+            Reporter._client = mqtt.Client(
+                mqtt.CallbackAPIVersion.VERSION2  # pyright: ignore
+            )
             Reporter._client.on_connect = Reporter.__on_connect
             Reporter._client.on_message = Reporter.__on_message
             Reporter._client.connect(Reporter.broker, Reporter.port, Reporter.keepalive)
@@ -54,5 +57,5 @@ class Reporter:
             return
 
         Reporter._client.loop_start()  # Start the client loop for publishing # pyright: ignore
-        Reporter._client.publish("FISHERYNET|REPORTS", report, 2) # pyright: ignore
+        Reporter._client.publish("FISHERYNET|REPORTS", report, 2)  # pyright: ignore
         Reporter._client.loop_stop()  # Stop the client loop after publishingoop_stop() # pyright: ignore
