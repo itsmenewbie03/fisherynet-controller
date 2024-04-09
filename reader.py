@@ -142,11 +142,11 @@ class Camera(Reader):
                 print(f":: [ERROR] fswebcam failed: {errors}")
                 return None
             # TODO: cache the working device_idx
-            if device_idx != 0 and not path.exists("device_idx.txt"):
+            if self.device_idx != 0 and not path.exists("device_idx.txt"):
                 print(
                     f":: [CAMERA] Device {device} is working, caching the device index"
                 )
-                open("device_idx.txt", "w").write(str(device_idx))
+                open("device_idx.txt", "w").write(str(self.device_idx))
 
             # INFO: read the image
             data = open("imgs/temp.png", "rb").read()
